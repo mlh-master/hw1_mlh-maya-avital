@@ -18,10 +18,14 @@ def pred_log(logreg, X_train, y_train, X_test, flag=False):
     :param flag: A boolean determining whether to return the predicted he probabilities of the classes (relevant after Q11)
     :return: A two elements tuple containing the predictions and the weightning matrix
     """
-    # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
-
-    # -------------------------------------------------------------------------
-    return y_pred_log, w_log
+    
+    clf = logreg.fit(X_train, y_train)
+    coef = clf.coef_
+    if flag:
+        y_pred_log = clf.predict_proba(X_test)
+    else:
+        y_pred_log = clf.predict(X_test)
+    return y_pred_log, coef
 
 
 def w_no_p_table(w, features):
@@ -75,6 +79,7 @@ def cv_kfold(X, y, C, penalty, K, mode):
     """
     kf = SKFold(n_splits=K)
     validation_dict = []
+    
     for c in C:
         for p in penalty:
             logreg = LogisticRegression(solver='saga', penalty=p, C=c, max_iter=10000, multi_class='ovr')
@@ -82,7 +87,20 @@ def cv_kfold(X, y, C, penalty, K, mode):
             k = 0
             for train_idx, val_idx in kf.split(X, y):
                 x_train, x_val = X.iloc[train_idx], X.iloc[val_idx]
+                y_train, y_val = y[train_idx], y[val_idx]
+                [val_idx]
+
         # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
+                logreg.fit(x_train, y_train)
+                y_pred_proba, w = pred_log(logreg, nsd(x_train, mode=mode, flag=False), y_train, nsd(x_val, mode=mode, flag=False), flag=True)
+                loss_val_vec[k] = log_loss(y_val, y_pred_proba)
+                #loss_val_vec[k] = log_loss(y_val, y_pred_proba).mean()
+
+                k+=1
+           
+            validation_dict.append({'C': c, 'penalty': p, 'mu': loss_val_vec.mean(), 'sigma': loss_val_vec.std() })
+
+
 
         # --------------------------------------------------------------------------
     return validation_dict
@@ -98,7 +116,10 @@ def odds_ratio(w, X, selected_feat='LB'):
              odds_ratio: the odds ratio of the selected feature and label
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
-
+    is_feat = (X.keys()==feature)
+    res = [i for i, val in enumerate(is_feat) if val]
+        
+    odds = 10 ** numpy.dot(X[:,res],w[:,res].T)
     # --------------------------------------------------------------------------
 
     return odds, odd_ratio

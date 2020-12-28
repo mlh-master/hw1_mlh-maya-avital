@@ -120,15 +120,15 @@ def norm_standard(CTG_features, selected_feat=('LB', 'ASTV'), mode='none', flag=
     """
     x, y = selected_feat
     # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-    result = CTG_features.copy()
-
     if mode == 'standard':
-            for feature_name in CTG_features.columns:
-                mean_value = CTG_features[feature_name].mean()
-                std_value = np.std(CTG_features[feature_name])
-                result[feature_name] = (CTG_features[feature_name] - mean_value) / std_value
+        result = CTG_features.copy()
+        for feature_name in CTG_features.columns:
+            mean_value = CTG_features[feature_name].mean()
+            std_value = np.std(CTG_features[feature_name])
+            result[feature_name] = (CTG_features[feature_name] - mean_value) / std_value
 
     if mode == 'MinMax':
+        result = CTG_features.copy()
         for feature_name in CTG_features.columns:
             max_value = CTG_features[feature_name].max()
             min_value = CTG_features[feature_name].min()
@@ -136,6 +136,7 @@ def norm_standard(CTG_features, selected_feat=('LB', 'ASTV'), mode='none', flag=
 
 
     if mode == 'mean':
+        result = CTG_features.copy()
         for feature_name in CTG_features.columns:
             max_value = CTG_features[feature_name].max()
             min_value = CTG_features[feature_name].min()
@@ -143,19 +144,17 @@ def norm_standard(CTG_features, selected_feat=('LB', 'ASTV'), mode='none', flag=
             result[feature_name] = (CTG_features[feature_name] - mean_value) / (max_value - min_value)
 
 
-
-    nsd_res = result
+    fig1 = plt.figure()
+    ax1 = fig1.add_subplot(1,1,1)
+    #n, bins, patches = ax1.hist(result[x], bins = 50)
+    ax1.hist(result[x], bins = 50)
+    ax1.title.set_text(x)
+    fig2 = plt.figure()
+    ax2 = fig2.add_subplot(1,1,1)
+    #n, bins, patches = ax2.hist(result[y], bins = 50)
+    ax2.hist(result[y], bins = 50)
+    ax2.title.set_text(y)
     
-    if flag:
-        fig1 = plt.figure()
-        ax1 = fig1.add_subplot(1,1,1)
-            #n, bins, patches = ax1.hist(result[x], bins = 50)
-        ax1.hist(result[x], bins = 50)
-        ax1.title.set_text(x)
-        fig2 = plt.figure()
-        ax2 = fig2.add_subplot(1,1,1)
-        #n, bins, patches = ax2.hist(result[y], bins = 50)
-        ax2.hist(result[y], bins = 50)
-        ax2.title.set_text(y)
+    nsd_res = result
     # -------------------------------------------------------------------------
     return pd.DataFrame(nsd_res)
